@@ -1,3 +1,5 @@
+# Advise using swagger https://editor.swagger.io/ to view this specification
+
 openapi: 3.0.0
 servers:
   - description: Cafcass APIs to retrieve case data and docs
@@ -158,7 +160,8 @@ components:
         dateSubmitted:
           type: string
           example: '2022-08-13'
-          
+        
+
         courtServices:
           type: array
           description: Additional services required of the court to facilitate proceedings
@@ -175,8 +178,9 @@ components:
                   supportingText:
                     type: string
                     example: The two Respondents are highly conflicted, and require a mediator.
-                    description: freetext
-                    
+                    description: freetext, unknown length
+
+        # EH: Possible enum / mapping
         ordersApplyingFor:
           type: array
           items:
@@ -214,6 +218,7 @@ components:
                   firstName:
                     type: string
                     example: 'Julia'
+                    description: freetext
                     
                   childLivingArrangement:
                     type: object
@@ -240,6 +245,7 @@ components:
                           addressLine2:
                             type: string
                             example: '1 Signet Square'
+                            description: freetext
                             
                           country:
                             type: string
