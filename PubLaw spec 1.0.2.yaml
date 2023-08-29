@@ -1,0 +1,768 @@
+openapi: 3.0.0
+servers:
+  - description: Cafcass APIs to retrieve case data and docs
+    url: none
+info:
+  description: This document present details of third-party organisations to retrieve case data and documents from the CFT case management system
+  version: 1.0.2
+  title: Cafcass APIs
+  contact:
+    email: 
+paths:
+  /family-api/cases:
+    get:
+      security:
+        - Authorization: []
+        - Ocp-Apim-Subscription-Key: []
+      tags:
+        - Cases
+      summary: Search and return cases according to the provided parameters
+      operationId: get cases data
+      description: |
+        This API retrieve case data
+      parameters:
+        - in: query
+          name: start_date
+          description: start date timestamp
+          example: '2022-03-28T12:32:54.541'
+          schema:
+            type: string
+            format: datetime
+            example: '2022-03-28T12:32:54.541'
+            
+        - in: query
+          name: end_date
+          description: end date timestamp
+          example: '2022-03-28T12:32:54.541'
+          schema:
+            type: string
+            format: datetime
+            example: '2022-03-28T12:32:54.541'
+            
+      responses:
+        '200':
+          description: search results matching criteria
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/response'
+        '400':
+          description: bad input parameter
+        '403':
+          description: Auth Error
+        '429':
+          description: rate limit error or too many requests
+        '500':
+          description: Internal server error
+  /family-api/cases/documents/{documentId}/binary:
+  # EH: unsure why this is here^
+  
+    get:
+      security:
+        - Authorization: []
+        - Ocp-Apim-Subscription-Key: []
+      tags:
+        - Cases
+      summary: Streams contents of the most recent document associated with the case document. ResponseEntity<ByteArrayResource> more info can be find here>> https://github.com/hmcts/ccd-case-document-am-api/blob/master/src/main/java/uk/gov/hmcts/reform/ccd/documentam/controller/endpoints/CaseDocumentAmController.java#L167
+      operationId: get case document
+      description: |
+        This API retrieves case document
+      parameters:
+        - in: path
+          required: true
+          name: documentId
+          description: Retrieve case document by document ID
+          schema:
+            type: string
+            format: string
+            example: dfe93656-a268-4fde-8f80-0152235daf95
+            
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Case document Id is not valid
+        '403':
+          description: Auth Error
+        '404':
+          description: Case document not found
+        '429':
+          description: rate limit error or too many requests
+        '500':
+          description: Internal server error
+
+components:
+  schemas:
+    response:
+      type: object
+      properties:
+        total:
+          type: integer
+          format: number
+          example: 1
+          
+        cases:
+          $ref: '#/components/schemas/case'
+        
+    case:
+      type: array
+      items:
+        properties:
+          id:
+            type: integer
+            example: 1234123412341234
+            description: 16digit CCD case refference
+            
+          jurisdiction:
+            type: string
+            example: 'PUBLICLAW'
+            
+          state:
+            type: string
+            example: 'TBC'
+            description: FPL's state for the case, e.g. 'prepare for hearing' in PriLaw
+            
+          case_type_id:
+            type: string
+            example: PUBLAPPS
+            
+          created_date:
+            type: string
+            example: '2022-05-19T09:01:31.576'
+            
+          last_modified:
+            type: string
+            example: '2022-05-24T14:46:15.505'
+            
+          last_state_modified_date:
+            type: string
+            example: '2022-05-24T14:46:15.505'
+          
+          caseTypeOfApplication:
+            type: string
+            example: C110
+          
+          case_data:
+            $ref: '#/components/schemas/case_data'
+          
+    case_data:
+      type: object
+      properties:
+        familymanCaseNumber:
+          type: string
+          example: 'LV22P70768'
+          description: Exists for old cases and may persist while older systems are migrated
+          
+        dateSubmitted:
+          type: string
+          example: '2022-08-13'
+          
+        courtServices:
+          type: array
+          description: Additional services required of the court to facilitate proceedings
+          items:
+            properties:
+              value:
+                type: object
+                properties:
+                  name:
+                    type: string
+                    example: Mediator
+                    description: finite mappable selection, including 'Other'. Is not person-level
+                    
+                  supportingText:
+                    type: string
+                    example: The two Respondents are highly conflicted, and require a mediator.
+                    description: freetext
+                    
+        ordersApplyingFor:
+          type: array
+          items:
+            type: string
+            example: careOrder
+            
+        children:
+          type: array
+          items:
+            properties:
+              value:
+                type: object
+                properties:
+                  lastName:
+                    type: string
+                    example: 'Doe'
+                  
+                  # EH: possible enum
+                  gender:
+                    type: string
+                    example: 'male'
+                    description:  Single choice radio buttons of male, female, other
+                    
+                  otherGender:
+                    type: string
+                    example: 'Transgender'
+                    description: freetext
+                    
+                  dateOfBirth:
+                    type: string
+                    format: date
+                    example: '2012-04-21'
+                    description: structured date input
+                    
+                  firstName:
+                    type: string
+                    example: 'Julia'
+                    
+                  childLivingArrangement:
+                    type: object
+                    properties:
+                      livingSituation:
+                        type: string
+                        enum:
+                        - REMOVED_POLICE_POWERS # Removed under police powers which end soon
+                        - IN_CARE_SECTION20_76 # In care under a voluntary section 20 (76) agreement
+                        - IN_HOSPITAL # In hospital and ready to be discharged soon
+                        - WITH_RESPONDENTS # Living with respondent(s)
+                        - WITH_FAMILY_OR_FRIENDS
+                        - OTHER # EH unclear if there's a textbox shown in this case or any others
+                        description: optional, apparently
+                        
+                      address:
+                        type: object
+                        description: lookup with freetext, depends upon chosen living situation
+                        properties:
+                          buildingAndStreet:
+                            type: string
+                            description: freetext
+                          
+                          addressLine2:
+                            type: string
+                            example: '1 Signet Square'
+                            
+                          country:
+                            type: string
+                            example: 'United Kingdom'
+                            description: optional, freetext
+                            
+                          postTown:
+                            type: string
+                            example: 'Coventry'
+                            description: freetext
+                            
+                          postCode:
+                            type: string
+                            example: 'CV2 4NZ'
+                            description: freetext
+                            
+                          county:
+                            type: string
+                            example: 'Lincolnshire'
+                            description: freetext
+                            
+        applicant:
+          type: object
+          description: mandatory
+          properties:
+          
+            applicantName:
+              type: string
+              example: 'Bradford City Council'
+              description: mandatory, freetext
+
+            groupEmailAddress:
+              type: string
+              example: 'mail@mailserver.com'
+              description: freetext, optional
+            
+            # can this be used for Local Authority mapping?
+            PBANumber:
+              type: string
+              example: 'PBA1234567'
+              description: freetext, mandatory
+            
+            phoneNumber:
+              type: string
+              example: '07777 555 888'
+              description: freetext, mandatory
+              
+            address:
+              type: object
+              description: mandatory
+              properties:
+                buildingAndStreet:
+                  type: string
+                  example: '1 Signet Square'
+                  description: freetext, optional
+              
+                addressLine2:
+                  type: string
+                  example: 'Croydon'
+                  description: freetext, optional
+                  
+                country:
+                  type: string
+                  example: 'United Kingdom'
+                  description: freetext, optional
+                  
+                postTown:
+                  type: string
+                  example: 'London'
+                  description: freetext, optional
+                  
+                postCode:
+                  type: string
+                  example: 'LN2 4NZ'
+                  description: freetext, optional
+                  
+                county:
+                  type: string
+                  example: 'Greater London'
+                  description: freetext, optional
+            
+            # Unclear from Demo whether Social Worker role has additional fields
+            colleagues:
+              type: array
+              items:
+                properties:
+                  value:
+                    type: object
+                    properties:
+                      # EH: possible enum, 3 fixed values with potential for expansion
+                      role:
+                        type: string
+                        example: 'Solicitor'
+                        description: mandatory, radiobutton choice (solicitor, social worker, other colleague)
+                        
+                      roleOther:
+                        type: string
+                        example: 'Clerk'
+                        description: freetext, mandatory if role == Other, len tbc
+                        
+                      
+                      fullName:
+                        type: string
+                        example: 'Lily J. Brook'
+                        description: freetext, mandatory
+                        
+                      email:
+                        type: string
+                        example: 'mail@mailermail.com'
+                        description: freetext, mandatory
+                        
+                      phoneNumber:
+                        type: string
+                        example: '07777 212 333'
+                        description: freetext, optional
+                      
+                      # Both of the below are only captured if role == Solcitor
+                      # EH: it is unclear if at least one colleague is required, nor if there are requirements for a certain type
+                      solicitorDXCode:
+                        type: string
+                        description: freetext, optional, solicitor dx code only present for solicitors
+                        
+                      solicitorRef:
+                        type: string
+                        description: freetext, optional, solicitor ref code only present for solicitors
+                        
+        respondents:
+          type: array
+          items:
+            properties:
+              value:
+                type: object
+                properties:
+                
+                  lastName:
+                    type: string
+                    example: 'Doe'
+                    description: Freetext
+                    
+                  gender:
+                    type: string
+                    example: male
+                    description: single selector incl other
+                    
+                  representativeFirstName:
+                    type: string
+                    example: 'Breav'
+                    description: Freetext
+                    
+                  solicitorOrg:
+                    type: object
+                    properties:
+                      OrganisationID:
+                        type: string
+                        example: W98ZZ5W
+                        
+                      OrganisationName:
+                        type: string
+                        example: Uday2 Test Org
+                        
+                  solicitorEmail:
+                    type: string
+                    example: cafcca@gmail.com
+                    description: freetext
+                    
+                  solicitorTelephone:
+                    type: string
+                    example: '07777 545 656'
+                    description: freetext
+                    
+                  representativeLastName:
+                    type: string
+                    example: 'Caez'
+                    description: freetext
+                  
+                  solicitorReference:
+                    type: string
+                    example: ???
+                  
+                  
+                  solicitorAddress:
+                    type: object
+                    properties:
+                      buildingAndStreet:
+                        type: string
+                        example: '1 Signet Square'
+                        description: freetext
+                        
+                      addressLine2:
+                        type: string
+                        example: 'Croydon'
+                        description: freetext
+                        
+                      country:
+                        type: string
+                        example: 'United Kingdom'
+                        description: freetext
+
+                      postTown:
+                        type: string
+                        example: 'Coventry'
+                        description: freetext
+                        
+                      postCode:
+                        type: string
+                        example: 'CV2 4NZ'
+                        description: freetext
+                        
+                      county:
+                        type: string
+                        example: 'Lincolnshire'
+                        description: freetext
+                  
+                  email:
+                    type: string
+                    example: 'mail@mailserver.net'
+                    description: freetext
+                  
+                  
+                  hideContactDetails:
+                    type: boolean
+                    example: true
+                  
+                  # Not sure we need this
+                  isAddressKnown:
+                    type: boolean
+                    example: false
+                    description: applicant has a yes / no choice
+                  
+                  # more values tbc
+                  addressUnknownDetail:
+                    type: string
+                    enum:
+                    - NOFIXEDABODE
+                    description: Dropdown values, subject to change, mandatory
+                  
+                  #
+                  address:
+                    type: object
+                    description: available as a lookup, but every field besides Country is freetext
+                    properties:
+                      buildingAndStreet:
+                        type: string
+                        example: '1 Signet Square'
+                        description: freetext
+                      
+                      addressLine2:
+                        type: string
+                        example: 'Croydon'
+                        description: freetext
+                        
+                      country:
+                        type: string
+                        example: 'United Kingdom'
+                        description: freetext
+                        
+                      postTown:
+                        type: string
+                        example: 'Coventry'
+                        description: freetext
+
+                      postCode:
+                        type: string
+                        example: 'CV2 4NZ'
+                        description: freetext
+
+                      county:
+                        type: string
+                        example: 'Lincolnshire'
+                        description: freetext
+                  
+                  relationshipToChild:
+                    type: string
+                    example: 'Their grandmother'
+                    description: Freetext
+                    
+                  dateOfBirth:
+                    type: string
+                    example: '1982-04-21'
+                    description: structured input
+                    
+                  firstName:
+                    type: string
+                    example: 'John'
+                    description: Freetext
+                    
+                  phoneNumber:
+                    type: string
+                    example: '07424226800'
+                    description: Freetext
+        
+        # Should these really be under a Court object or similar?
+        # Currently matches PriLaw implementation
+        courtEpimsId:
+          type: string
+          example: 121111
+        courtTypeId:
+          type: string
+          example: 43333
+        courtName:
+          type: string
+          example: Coventry Combined Court Centre
+        
+        otherPeople:
+          type: array
+          description: Other persons named on the case
+          items:
+            properties:
+              value:
+                type: object
+                properties:
+                  lastName:
+                    type: string
+                    example: 'Jerry'
+                    
+                  placeOfBirth:
+                    type: string
+                    example: 'Liverpool'
+                    
+                  address:
+                    type: object
+                    properties:
+                      buildingAndStreet:
+                        type: string
+                        example: '1 Signet Square'
+                        
+                      addressLine2:
+                        type: string
+                        example: 1 Signet Square
+                        
+                      country:
+                        type: string
+                        example: 'United Kingdom'
+                        
+                      postTown:
+                        type: string
+                        example: 'Easingwold'
+                        
+                      postCode:
+                        type: string
+                        example: 'YO2 5JB'
+                        
+                      county:
+                        type: string
+                        example: 'North Yorkshire'
+                  
+                  # EH: possible enum
+                  gender:
+                    type: string
+                    example: male
+                    
+                  dateOfBirth:
+                    type: string
+                    example: TEST
+                    
+                  firstName:
+                    type: string
+                    example: ca8
+                    
+                  phoneNumber:
+                    type: string
+                    example: null
+                    
+                  otherGender:
+                    type: string
+                    example: null
+        
+        hearingData:
+          type: object
+          properties:
+            hmctsServiceCode:
+              type: string
+              example: ABA5
+            
+            # E: wondering why this object doesn't have an Epims ID on PriLaw? Is it not needed for hearings?
+            
+            caseRef:
+              type: string
+              example: '1677494509039975'
+              
+            courtTypeId:
+              type: string
+              example: 43333
+              
+            courtName:
+              type: string
+              example: Coventry Combined Court Centre
+              
+            caseHearings:
+              type: array
+              items:
+                properties:
+                  hearingId:
+                    type: string
+                    example: '2000005039'
+                    
+                  hearingStatus:
+                    type: string
+                    enum:
+                      - LISTED
+                      - CANCELED
+                      
+                  hearingType:
+                    type: string
+                    example: 'ABA5-REV'
+                  
+                  # EH: possible enum?
+                  hearingTypeValue:
+                    type: string
+                    example: Review
+                    
+                  hearingDaySchedule:
+                    type: array
+                    items:
+                      properties:
+                        hearingVenueName:
+                          type: string
+                          example: ROYAL COURTS OF JUSTICE - QUEENS BUILDING (AND WEST GREEN BUILDING)
+                          
+                        hearingStartDateTime:
+                          type: string
+                          example: '2023-03-10T12:00:00'
+                          
+                        hearingEndDateTime:
+                          type: string
+                          example: '2023-03-10T14:00:00'
+                          
+                        courtTypeId:
+                          type: string
+                          example: 43333
+                          
+                        courtName:
+                          type: string
+                          example: 'Coventry Combined Court Centre'
+                          
+                        epimsId:
+                          type: string
+                          example: 121111
+        
+        # New generic documents structure
+        # Permits Cafcass to handle documents via metadata
+        documents:
+            type: array
+            items:
+              type: object
+              properties:
+                documentId:
+                  type: string
+                  example: 'TBC'
+                  description: unique identified of this file. May be used to request download of the file
+                  
+                documentName:
+                  type: string
+                  example: 'mySWET.pdf'
+                  description: the full filename including filetype extension
+                
+                # EH: possible enum
+                documentType:
+                  type: string
+                  example: 'SWET'
+                  description: mandatory single selection dropdown
+                  
+                # EH: possible enum?
+                documentFileType:
+                  type: string
+                  example: 'pdf'
+                  description: denotes the format of the file
+                  
+                documentDescription:
+                  type: string
+                  example: 'Notes regarding XYZ are included in this document. It also includes my report and an eye witness testimony, for convenience'
+                  description: freetext optional, len tbc
+                
+                # metadata tbc by HMCTS
+                documentMetadata:
+                  type: object
+                  description: upload date, category, folder, isRestricted etc.
+                
+                # on the portal, this is a solitary checkbox
+                # being ticked indicates confidentiality (true)
+                # imo every y/n should return a bool, too
+                documentIsConfidential:
+                  type: boolean
+                  example: true
+                  description: mandatory, denotes whether document should be restricted to LA, Cafcass, and HMCTS staff
+
+
+    # unsure why this causes problems
+    # declared but never used
+    caseManagementLocation:
+      type: object
+      properties:
+        regionId:
+          type: string
+          example: 2 (Either you will get regionId or region)
+          
+        region:
+          type: string
+          example: 2 (Either you will get regionId or region)
+          
+        baseLocation:
+          type: string
+          example: 497679 (Either you will get baseLocationId or baseLocation)
+          
+        baseLocationId:
+          type: string
+          example: 497679 (Either you will get baseLocationId or baseLocation)
+        
+        # EH: suspect this is enum or mappable table, unsure if it's available on PubLaw
+        regionName:
+          type: string
+          example: Midlands
+          
+        baseLocationName:
+          type: string
+          example: Coventry Combined Court Centre
+          
+  securitySchemes:
+    Authorization:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    Ocp-Apim-Subscription-Key:
+      type: apiKey
+      in: header
+      name: X-API-KEY
