@@ -1,0 +1,770 @@
+{
+  "definitions": {
+    "Address": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "properties": {
+        "addressLine1": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "addressLine2": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "addressLine3": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "postCode": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "town": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "county": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "country": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "required": [
+        "addressLine1",
+        "addressLine2",
+        "addressLine3",
+        "postCode",
+        "town",
+        "county",
+        "country"
+      ]
+    },
+    "Applicant": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "properties": {
+        "name": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "groupEmailAddress": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "phoneNumber": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "pbaNumber": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "address": {
+          "$ref": "#/definitions/Address"
+        }
+      },
+      "required": [
+        "name",
+        "groupEmailAddress",
+        "phoneNumber",
+        "pbaNumber",
+        "address"
+      ]
+    },
+    "Child": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "properties": {
+        "childLivingArrangement": {
+          "$ref": "#/definitions/LivingArrangement"
+        },
+        "firstName": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "lastName": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "dateOfBirth": {
+          "$ref": "#/definitions/DateOnly"
+        },
+        "gender": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "otherGender": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "email": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "phoneNumber": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "required": [
+        "childLivingArrangement",
+        "firstName",
+        "lastName",
+        "dateOfBirth",
+        "gender",
+        "otherGender",
+        "email",
+        "phoneNumber"
+      ]
+    },
+    "CourtService": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "properties": {
+        "name": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "supportingText": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "required": [
+        "name",
+        "supportingText"
+      ]
+    },
+    "DateOnly": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "year": {
+          "type": "integer"
+        },
+        "month": {
+          "type": "integer"
+        },
+        "day": {
+          "type": "integer"
+        },
+        "dayOfWeek": {
+          "type": "integer",
+          "enum": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ]
+        },
+        "dayOfYear": {
+          "type": "integer"
+        },
+        "dayNumber": {
+          "type": "integer"
+        }
+      },
+      "required": [
+        "year",
+        "month",
+        "day",
+        "dayOfWeek",
+        "dayOfYear",
+        "dayNumber"
+      ]
+    },
+    "Document": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "type": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "fileType": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "description": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "metadata": {},
+        "isConfidential": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "type",
+        "fileType",
+        "description",
+        "metadata",
+        "isConfidential"
+      ]
+    },
+    "Hearing": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "properties": {
+        "id": {
+          "type": "integer"
+        },
+        "status": {
+          "type": "integer",
+          "enum": [
+            0,
+            1,
+            2
+          ]
+        },
+        "type": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "schedules": {
+          "type": [
+            "array",
+            "null"
+          ],
+          "items": {
+            "$ref": "#/definitions/Schedule"
+          }
+        }
+      },
+      "required": [
+        "id",
+        "status",
+        "type",
+        "schedules"
+      ]
+    },
+    "LivingArrangement": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "properties": {
+        "livingSituation": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "enum": [
+            null,
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ]
+        }
+      },
+      "required": [
+        "livingSituation"
+      ]
+    },
+    "Organisation": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "properties": {
+        "id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "name": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "required": [
+        "id",
+        "name"
+      ]
+    },
+    "Person": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "properties": {
+        "firstName": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "lastName": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "dateOfBirth": {
+          "$ref": "#/definitions/DateOnly"
+        },
+        "gender": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "otherGender": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "email": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "phoneNumber": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "required": [
+        "firstName",
+        "lastName",
+        "dateOfBirth",
+        "gender",
+        "otherGender",
+        "email",
+        "phoneNumber"
+      ]
+    },
+    "PrivateLawCaseData": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "properties": {
+        "courtEpimsId": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "courtTypeId": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "courtName": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "familymanNumber": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "dateSubmitted": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "courtServices": {
+          "type": [
+            "array",
+            "null"
+          ],
+          "items": {
+            "$ref": "#/definitions/CourtService"
+          }
+        },
+        "ordersApplyingFor": {
+          "type": [
+            "array",
+            "null"
+          ],
+          "items": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        },
+        "children": {
+          "type": [
+            "array",
+            "null"
+          ],
+          "items": {
+            "$ref": "#/definitions/Child"
+          }
+        },
+        "applicant": {
+          "$ref": "#/definitions/Applicant"
+        },
+        "respondents": {
+          "type": [
+            "array",
+            "null"
+          ],
+          "items": {
+            "$ref": "#/definitions/Respondent"
+          }
+        },
+        "otherPeople": {
+          "type": [
+            "array",
+            "null"
+          ],
+          "items": {
+            "$ref": "#/definitions/Person"
+          }
+        },
+        "hearings": {
+          "type": [
+            "array",
+            "null"
+          ],
+          "items": {
+            "$ref": "#/definitions/Hearing"
+          }
+        },
+        "documents": {
+          "type": [
+            "array",
+            "null"
+          ],
+          "items": {
+            "$ref": "#/definitions/Document"
+          }
+        }
+      },
+      "required": [
+        "courtEpimsId",
+        "courtTypeId",
+        "courtName",
+        "familymanNumber",
+        "dateSubmitted",
+        "courtServices",
+        "ordersApplyingFor",
+        "children",
+        "applicant",
+        "respondents",
+        "otherPeople",
+        "hearings",
+        "documents"
+      ]
+    },
+    "Respondent": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "properties": {
+        "address": {
+          "$ref": "#/definitions/Address"
+        },
+        "isAddressKnown": {
+          "type": "boolean"
+        },
+        "addressUnknownDetail": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "relationshipToChild": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "solicitor": {
+          "$ref": "#/definitions/Solicitor"
+        },
+        "hideContactDetails": {
+          "type": "boolean"
+        },
+        "firstName": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "lastName": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "dateOfBirth": {
+          "$ref": "#/definitions/DateOnly"
+        },
+        "gender": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "otherGender": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "email": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "phoneNumber": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "required": [
+        "address",
+        "isAddressKnown",
+        "addressUnknownDetail",
+        "relationshipToChild",
+        "solicitor",
+        "hideContactDetails",
+        "firstName",
+        "lastName",
+        "dateOfBirth",
+        "gender",
+        "otherGender",
+        "email",
+        "phoneNumber"
+      ]
+    },
+    "Schedule": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "properties": {
+        "courtEpimsId": {
+          "type": "integer"
+        },
+        "courtTypeId": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "start": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "end": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "courtEpimsId",
+        "courtTypeId",
+        "start",
+        "end"
+      ]
+    },
+    "Solicitor": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "properties": {
+        "firstName": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "lastName": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "email": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "phoneNumber": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "reference": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "address": {
+          "$ref": "#/definitions/Address"
+        },
+        "organisation": {
+          "$ref": "#/definitions/Organisation"
+        }
+      },
+      "required": [
+        "firstName",
+        "lastName",
+        "email",
+        "phoneNumber",
+        "reference",
+        "address",
+        "organisation"
+      ]
+    }
+  },
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string"
+    },
+    "state": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "jurisdiction": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "caseTypeId": {
+      "type": "integer"
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "modifiedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "lastStateModifiedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "caseTypeOfApplication": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "caseData": {
+      "$ref": "#/definitions/PrivateLawCaseData"
+    }
+  },
+  "required": [
+    "id",
+    "state",
+    "jurisdiction",
+    "caseTypeId",
+    "createdAt",
+    "modifiedAt",
+    "lastStateModifiedAt",
+    "caseTypeOfApplication",
+    "caseData"
+  ]
+}
